@@ -1,5 +1,48 @@
-INSERT INTO Genres (name) VALUES ('Rock'), ('Pop'), ('Hip-Hop'), ('Jazz'), ('Electronic');
-INSERT INTO Artists (name) VALUES ('The Beatles'),  ('Lamar'), ('Adele'), ('Prodigy'), ('Queen'); INSERT INTO ArtistsGenres (artist_id, genre_id) VALUES (1, 1), (2,3), (3,4), (4,3), (5, 1); INSERT INTO Albums (title, year, artist_id) VALUES ('To Pimp a Butterfly', 2015, 3), ('A Night at the Opera', 2015, 1), ('8 miles', 2010, 2);
-INSERT INTO ArtistsAlbums (artist_id, album_id) VALUES (1, 1), (2, 2), (4, 3);
-INSERT INTO Tracks (title, duration, album_id) VALUES  ('Lucky', 200, 1), ('Not Lucky', 100, 2), ('Funny', 23, 3); INSERT INTO Collections (year, title) VALUES (2020, 'Best of 2010s'), (2019, 'Rock Classics'), (2017, 'Summer Hits');
-INSERT INTO TracksCollections (track_id, collection_id)  VALUES (1, 2), (2, 1), (3, 3);
+CREATE TABLE Genres (
+    genre_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE Artists (
+    artist_id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE ArtistsGenres (
+    artist_id INTEGER REFERENCES Artists(artist_id) ON DELETE CASCADE,
+    genre_id INTEGER REFERENCES Genres(genre_id) ON DELETE CASCADE,
+    PRIMARY KEY (artist_id, genre_id)
+);
+
+CREATE TABLE Albums (
+    album_id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    year INTEGER NOT NULL CHECK (year >= 1900),
+    artist_id INTEGER NOT NULL REFERENCES Artists(artist_id) ON DELETE CASCADE
+);
+
+CREATE TABLE ArtistsAlbums (
+    artist_id INTEGER REFERENCES Artists(artist_id) ON DELETE CASCADE,
+    album_id INTEGER REFERENCES Albums(album_id) ON DELETE CASCADE,
+    PRIMARY KEY (artist_id, album_id)
+);
+
+CREATE TABLE Tracks (
+    track_id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    duration INTEGER NOT NULL CHECK (duration > 0),
+    album_id INTEGER NOT NULL REFERENCES Albums(album_id) ON DELETE CASCADE
+);
+
+CREATE TABLE Collections (
+    collection_id SERIAL PRIMARY KEY,
+    year INTEGER NOT NULL CHECK (year >= 1900),
+    title VARCHAR(255) NOT NULL
+); 
+CREATE TABLE TracksCollections (
+    track_id INTEGER REFERENCES Tracks(track_id) ON DELETE CASCADE,
+    collection_id INTEGER REFERENCES Collections(collection_id) ON DELETE CASCADE,
+    PRIMARY KEY (track_id, collection_id)
+);
+
+
